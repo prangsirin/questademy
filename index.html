@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life on Mars by Questademy – เรียนรู้การใช้ข้อมูลผ่านเกมบนดาวอังคาร</title>
+    <meta name="description" content="Life on Mars - เกมจำลองการใช้ชีวิตบนดาวอังคาร จาก Questademy ที่ทำให้คุณเข้าใจการใช้ข้อมูลและการตัดสินใจแบบ data-driven ผ่านการเล่น">
+
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Sarabun', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: #0f0f1e;
+            color: #ffffff;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+
+        /* === STARFIELD BACKGROUND === */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* === PIXEL MARS === */
+        .pixel-mars {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 15%;
+            right: 10%;
+            z-index: 1;
+            transform: scale(4);
+            box-shadow:
+                0px 0px 0 4px #8B4513, 8px 0px 0 4px #8B4513, 16px 0px 0 4px #8B4513, 24px 0px 0 4px #8B4513, 32px 0px 0 4px #8B4513, 40px 0px 0 4px #8B4513,
+                -8px 8px 0 4px #8B4513, 0px 8px 0 4px #A0522D, 8px 8px 0 4px #CD5C5C, 16px 8px 0 4px #E17055, 24px 8px 0 4px #CD5C5C, 32px 8px 0 4px #A0522D, 40px 8px 0 4px #8B4513, 48px 8px 0 4px #8B4513,
+                -16px 16px 0 4px #8B4513, -8px 16px 0 4px #CD5C5C, 0px 16px 0 4px #E17055, 8px 16px 0 4px #FF6B35, 16px 16px 0 4px #E17055, 24px 16px 0 4px #E17055, 32px 16px 0 4px #CD5C5C, 40px 16px 0 4px #A0522D, 48px 16px 0 4px #8B4513,
+                -16px 24px 0 4px #8B4513, -8px 24px 0 4px #E17055, 0px 24px 0 4px #FF6B35, 8px 24px 0 4px #C1440E, 16px 24px 0 4px #8B4513, 24px 24px 0 4px #FF6B35, 32px 24px 0 4px #E17055, 40px 24px 0 4px #CD5C5C, 48px 24px 0 4px #8B4513,
+                -16px 32px 0 4px #8B4513, -8px 32px 0 4px #CD5C5C, 0px 32px 0 4px #E17055, 8px 32px 0 4px #A0522D, 16px 32px 0 4px #8B4513, 24px 32px 0 4px #CD5C5C, 32px 32px 0 4px #E17055, 40px 32px 0 4px #A0522D, 48px 32px 0 4px #8B4513,
+                -8px 40px 0 4px #8B4513, 0px 40px 0 4px #A0522D, 8px 40px 0 4px #CD5C5C, 16px 40px 0 4px #E17055, 24px 40px 0 4px #CD5C5C, 32px 40px 0 4px #A0522D, 40px 40px 0 4px #8B4513, 48px 40px 0 4px #8B4513,
+                0px 48px 0 4px #8B4513, 8px 48px 0 4px #8B4513, 16px 48px 0 4px #8B4513, 24px 48px 0 4px #8B4513, 32px 48px 0 4px #8B4513, 40px 48px 0 4px #8B4513;
+            
+            animation: rotateMars 30s linear infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 107, 53, 0.6));
+        }
+
+        @keyframes rotateMars {
+            0% { transform: scale(4) rotate(0deg); }
+            100% { transform: scale(4) rotate(360deg); }
+        }
+
+        /* === PIXEL SPACESHIP === */
+        .pixel-spaceship {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 25%;
+            left: 15%;
+            z-index: 1;
+            transform: scale(3);
+            box-shadow:
+                16px 0px 0 4px #64b5f6,
+                8px 8px 0 4px #64b5f6, 16px 8px 0 4px #ffffff, 24px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #2196f3, 8px 16px 0 4px #64b5f6, 16px 16px 0 4px #ffffff, 24px 16px 0 4px #64b5f6, 32px 16px 0 4px #2196f3,
+                0px 24px 0 4px #1976d2, 8px 24px 0 4px #2196f3, 16px 24px 0 4px #64b5f6, 24px 24px 0 4px #2196f3, 32px 24px 0 4px #1976d2,
+                -8px 32px 0 4px #ff6b35, 0px 32px 0 4px #1976d2, 8px 32px 0 4px #2196f3, 16px 32px 0 4px #1976d2, 24px 32px 0 4px #2196f3, 32px 32px 0 4px #1976d2, 40px 32px 0 4px #ff6b35,
+                -8px 40px 0 4px #ff6b35, 8px 40px 0 4px #ff9800, 24px 40px 0 4px #ff9800, 40px 40px 0 4px #ff6b35;
+            
+            animation: floatShip 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.8));
+        }
+
+        @keyframes floatShip {
+            0%, 100% { transform: scale(3) translateY(0px); }
+            50% { transform: scale(3) translateY(-20px); }
+        }
+
+        /* === PIXEL ASTRONAUT === */
+        .pixel-astronaut {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 40%;
+            right: 20%;
+            z-index: 1;
+            transform: scale(2.5);
+            box-shadow:
+                8px 0px 0 4px #64b5f6, 16px 0px 0 4px #64b5f6,
+                0px 8px 0 4px #64b5f6, 8px 8px 0 4px #ffffff, 16px 8px 0 4px #ffffff, 24px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #64b5f6, 8px 16px 0 4px #ffd700, 16px 16px 0 4px #ffd700, 24px 16px 0 4px #64b5f6,
+                8px 24px 0 4px #ffffff, 16px 24px 0 4px #ffffff,
+                0px 32px 0 4px #ffffff, 8px 32px 0 4px #2196f3, 16px 32px 0 4px #2196f3, 24px 32px 0 4px #ffffff,
+                8px 40px 0 4px #ffffff, 16px 40px 0 4px #ffffff,
+                8px 48px 0 4px #64b5f6, 16px 48px 0 4px #64b5f6;
+            
+            animation: floatAstronaut 8s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(100, 181, 246, 0.6));
+        }
+
+        @keyframes floatAstronaut {
+            0%, 100% { transform: scale(2.5) translateY(0px) rotate(-5deg); }
+            50% { transform: scale(2.5) translateY(-30px) rotate(5deg); }
+        }
+
+        /* === PIXEL SATELLITE === */
+        .pixel-satellite {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 50%;
+            left: 25%;
+            z-index: 1;
+            transform: scale(2);
+            box-shadow:
+                -16px 8px 0 4px #1976d2, -16px 16px 0 4px #1976d2, -16px 24px 0 4px #1976d2,
+                -8px 8px 0 4px #2196f3, -8px 16px 0 4px #2196f3, -8px 24px 0 4px #2196f3,
+                0px 8px 0 4px #ffffff, 8px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #64b5f6, 8px 16px 0 4px #ffffff,
+                0px 24px 0 4px #ffffff, 8px 24px 0 4px #64b5f6,
+                16px 8px 0 4px #2196f3, 24px 8px 0 4px #1976d2,
+                16px 16px 0 4px #2196f3, 24px 16px 0 4px #1976d2,
+                16px 24px 0 4px #2196f3, 24px 24px 0 4px #1976d2;
+            
+            animation: rotateSatellite 15s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(33, 150, 243, 0.5));
+        }
+
+        @keyframes rotateSatellite {
+            0% { transform: scale(2) rotate(0deg); }
+            100% { transform: scale(2) rotate(360deg); }
+        }
+
+        /* === PIXEL UFO === */
+        .pixel-ufo {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 35%;
+            left: 8%;
+            z-index: 1;
+            transform: scale(2.5);
+            box-shadow:
+                16px 0px 0 4px #64b5f6,
+                8px 8px 0 4px #64b5f6, 16px 8px 0 4px #42a5f5, 24px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #2196f3, 8px 16px 0 4px #42a5f5, 16px 16px 0 4px #ffffff, 24px 16px 0 4px #42a5f5, 32px 16px 0 4px #2196f3,
+                -8px 24px 0 4px #1976d2, 0px 24px 0 4px #2196f3, 8px 24px 0 4px #2196f3, 16px 24px 0 4px #2196f3, 24px 24px 0 4px #2196f3, 32px 24px 0 4px #2196f3, 40px 24px 0 4px #1976d2,
+                0px 32px 0 4px #ffeb3b, 16px 32px 0 4px #ffeb3b, 32px 32px 0 4px #ffeb3b;
+            
+            animation: floatUFO 7s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.7));
+        }
+
+        @keyframes floatUFO {
+            0%, 100% { transform: scale(2.5) translateX(0px) translateY(0px); }
+            25% { transform: scale(2.5) translateX(15px) translateY(-10px); }
+            75% { transform: scale(2.5) translateX(-15px) translateY(-10px); }
+        }
+
+        /* === PIXEL METEORS === */
+        .pixel-meteor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            z-index: 1;
+            transform: scale(2);
+        }
+
+        .meteor-1 {
+            top: 10%;
+            left: 70%;
+            box-shadow:
+                0px 0px 0 4px #ff9800,
+                8px 8px 0 4px #ff6b35,
+                16px 16px 0 4px #ff6b35,
+                24px 24px 0 4px #ff5722;
+            animation: meteorFall1 8s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.8));
+        }
+
+        .meteor-2 {
+            top: 30%;
+            left: 80%;
+            box-shadow:
+                0px 0px 0 4px #ff9800,
+                8px 8px 0 4px #ff6b35,
+                16px 16px 0 4px #ff5722;
+            animation: meteorFall2 10s linear infinite 2s;
+            filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.8));
+        }
+
+        @keyframes meteorFall1 {
+            0% { transform: scale(2) translate(0, 0); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: scale(2) translate(-300px, 300px); opacity: 0; }
+        }
+
+        @keyframes meteorFall2 {
+            0% { transform: scale(2) translate(0, 0); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: scale(2) translate(-400px, 400px); opacity: 0; }
+        }
+
+        /* === PIXEL CITY === */
+        .pixel-city {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-top: 60px;
+        }
+
+        .building {
+            position: absolute;
+            bottom: 0;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .building-1 {
+            left: 5%;
+            width: 60px;
+            height: 120px;
+            background: linear-gradient(180deg, #1a237e 0%, #0d47a1 100%);
+            box-shadow: inset 0 0 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .building-2 {
+            left: 15%;
+            width: 80px;
+            height: 160px;
+            background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%);
+            box-shadow: inset 0 0 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .building-3 {
+            left: 28%;
+            width: 50px;
+            height: 90px;
+            background: linear-gradient(180deg, #1565c0 0%, #1976d2 100%);
+            box-shadow: inset 0 0 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .building-4 {
+            right: 28%;
+            width: 70px;
+            height: 140px;
+            background: linear-gradient(180deg, #1976d2 0%, #1e88e5 100%);
+            box-shadow: inset 0 0 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .building-5 {
+            right: 15%;
+            width: 55px;
+            height: 100px;
+            background: linear-gradient(180deg, #1e88e5 0%, #2196f3 100%);
+            box-shadow: inset 0 0 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .building-6 {
+            right: 5%;
+            width: 65px;
+            height: 130px;
+            background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%);
+            box-shadow: inset 0 0 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .window {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #42a5f5;
+            box-shadow: 0 0 10px rgba(66, 165, 245, 0.8);
+            animation: windowBlink 4s infinite;
+        }
+
+        @keyframes windowBlink {
+            0%, 90%, 100% { opacity: 1; }
+            95% { opacity: 0.3; }
+        }
+
+        .building-1 .window:nth-child(1) { top: 20px; left: 15px; animation-delay: 0s; }
+        .building-1 .window:nth-child(2) { top: 20px; left: 35px; animation-delay: 0.5s; }
+        .building-1 .window:nth-child(3) { top: 45px; left: 15px; animation-delay: 1s; }
+        .building-1 .window:nth-child(4) { top: 45px; left: 35px; animation-delay: 1.5s; }
+        .building-1 .window:nth-child(5) { top: 70px; left: 15px; animation-delay: 2s; }
+        .building-1 .window:nth-child(6) { top: 70px; left: 35px; animation-delay: 2.5s; }
+
+        .building-2 .window:nth-child(1) { top: 25px; left: 20px; animation-delay: 0.3s; }
+        .building-2 .window:nth-child(2) { top: 25px; left: 50px; animation-delay: 0.8s; }
+        .building-2 .window:nth-child(3) { top: 55px; left: 20px; animation-delay: 1.3s; }
+        .building-2 .window:nth-child(4) { top: 55px; left: 50px; animation-delay: 1.8s; }
+        .building-2 .window:nth-child(5) { top: 85px; left: 20px; animation-delay: 2.3s; }
+        .building-2 .window:nth-child(6) { top: 85px; left: 50px; animation-delay: 2.8s; }
+        .building-2 .window:nth-child(7) { top: 115px; left: 20px; animation-delay: 3.3s; }
+        .building-2 .window:nth-child(8) { top: 115px; left: 50px; animation-delay: 3.8s; }
+
+        /* === CONTAINER === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* === HERO === */
+        .hero {
+            position: relative;
+            min-height: 700px;
+            padding: 80px 20px 40px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .brand-group {
+            margin-bottom: 30px;
+        }
+
+        .company-logo {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.5));
+            margin-bottom: 15px;
+        }
+
+        .game-title {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.8), 0 0 60px rgba(33, 150, 243, 0.5);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { 
+                text-shadow: 0 0 30px rgba(255, 107, 53, 0.8), 0 0 60px rgba(33, 150, 243, 0.5);
+            }
+            50% { 
+                text-shadow: 0 0 40px rgba(255, 107, 53, 1), 0 0 80px rgba(33, 150, 243, 0.7);
+            }
+        }
+
+        .tagline {
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            opacity: 0.95;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            margin-bottom: 50px;
+            opacity: 0.85;
+            line-height: 1.8;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .signup-form {
+            max-width: 550px;
+            margin: 0 auto 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+        }
+        
+        .signup-form input {
+            flex: 1;
+            min-width: 280px;
+            padding: 18px 24px;
+            font-size: 17px;
+            border: 2px solid rgba(33, 150, 243, 0.5);
+            border-radius: 12px;
+            outline: none;
+            background: rgba(255,255,255,0.95);
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #0f0f1e;
+        }
+
+        .signup-form input:focus {
+            border-color: #2196f3;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.2);
+        }
+        
+        .signup-form button {
+            padding: 18px 45px;
+            font-size: 17px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .signup-form button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .signup-form button:hover::before {
+            left: 100%;
+        }
+
+        .signup-form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.5);
+        }
+
+        .signup-count {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            background: rgba(33, 150, 243, 0.2);
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === PROBLEM === */
+        .problem {
+            position: relative;
+            padding: 100px 20px;
+            background: rgba(26, 26, 46, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .problem-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .problem-item {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ff6b35;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .problem-item:hover {
+            background: rgba(255, 107, 53, 0.15);
+            transform: translateX(8px);
+        }
+
+        .problem-item strong {
+            color: #ff6b35;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 16px;
+            margin-top: 50px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(72, 187, 120, 0.3);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .solution-box h3 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .solution-box p {
+            font-size: 19px;
+            line-height: 1.8;
+        }
+
+        /* === FEATURES === */
+        .features {
+            position: relative;
+            padding: 100px 20px;
+            z-index: 2;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            padding: 40px;
+            border-radius: 16px;
+            background: rgba(33, 150, 243, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(33, 150, 243, 0.3);
+            border-color: rgba(33, 150, 243, 0.6);
+        }
+
+        .feature-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .th-flag {
+            display: inline-block;
+            background: white;
+            color: #c1440e;
+            font-weight: 800;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 32px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-desc {
+            font-size: 16px;
+            line-height: 1.8;
+            opacity: 0.9;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* === HOW IT WORKS === */
+        .how-it-works {
+            position: relative;
+            padding: 100px 20px;
+            background: rgba(26, 26, 46, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(33, 150, 243, 0.05);
+            border-radius: 16px;
+            border: 2px solid rgba(33, 150, 243, 0.2);
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            background: rgba(33, 150, 243, 0.1);
+            border-color: rgba(33, 150, 243, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-weight: 800;
+            font-size: 32px;
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+        }
+
+        .step strong {
+            font-size: 22px;
+            color: white;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .step span {
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* === FAQ === */
+        .faq {
+            position: relative;
+            padding: 100px 20px;
+            z-index: 2;
+        }
+
+        .faq-list {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: rgba(33, 150, 243, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(33, 150, 243, 0.2);
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            background: rgba(33, 150, 243, 0.1);
+            border-color: rgba(33, 150, 243, 0.4);
+        }
+
+        .faq-item strong {
+            font-size: 20px;
+            color: #64b5f6;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* === FOOTER === */
+        .footer {
+            position: relative;
+            padding: 60px 20px 40px;
+            text-align: center;
+            border-top: 2px solid rgba(33, 150, 243, 0.3);
+            z-index: 2;
+            background: rgba(15, 15, 30, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-logo {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .social-link {
+            font-size: 36px;
+            text-decoration: none;
+            transition: transform 0.3s;
+            display: inline-block;
+            filter: grayscale(0.3);
+        }
+
+        .social-link:hover {
+            transform: scale(1.3);
+            filter: grayscale(0);
+        }
+
+        .copyright {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .game-title { font-size: 42px; letter-spacing: 4px; }
+            .tagline { font-size: 22px; }
+            .subtitle { font-size: 17px; }
+            .company-logo { font-size: 18px; letter-spacing: 2px; }
+            .section-title { font-size: 32px; letter-spacing: 2px; }
+            
+            .signup-form { flex-direction: column; }
+            .signup-form input, .signup-form button { width: 100%; min-width: 100%; }
+
+            .hero { padding: 60px 20px 40px; min-height: 600px; }
+            .pixel-mars { transform: scale(2); right: 5%; top: 10%; }
+            .pixel-spaceship { transform: scale(2); left: 10%; top: 20%; }
+            .pixel-astronaut { transform: scale(1.8); right: 8%; top: 45%; }
+            .pixel-satellite { transform: scale(1.5); left: 15%; top: 55%; }
+            .pixel-ufo { transform: scale(1.8); left: 5%; top: 32%; }
+            .meteor-1, .meteor-2 { display: none; }
+
+            .pixel-city { height: 120px; }
+            .building-1 { width: 40px; height: 80px; }
+            .building-2 { width: 50px; height: 100px; }
+            .building-3 { width: 35px; height: 60px; }
+            .building-4 { width: 45px; height: 90px; }
+            .building-5 { width: 38px; height: 65px; }
+            .building-6 { width: 42px; height: 85px; }
+
+            .problem, .features, .how-it-works, .faq { padding: 70px 20px; }
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .game-title { font-size: 32px; }
+            .pixel-mars { transform: scale(1.5); top: 8%; right: 3%; }
+            .pixel-spaceship, .pixel-satellite, .pixel-ufo { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="starfield" id="starfield"></div>
+        <div class="pixel-mars"></div>
+        <div class="pixel-spaceship"></div>
+        <div class="pixel-astronaut"></div>
+        <div class="pixel-satellite"></div>
+        <div class="pixel-ufo"></div>
+        <div class="pixel-meteor meteor-1"></div>
+        <div class="pixel-meteor meteor-2"></div>
+
+        <section class="hero">
+            <div class="container">
+                <div class="brand-group">
+                    <div class="company-logo">QUESTADEMY</div>
+                    <h1 class="game-title">🪐 LIFE ON MARS</h1>
+                </div>
+                
+                <div class="tagline">เรียนรู้การใช้ "ข้อมูล" ผ่านการใช้ชีวิตบนดาวอังคาร</div>
+                <div class="subtitle">
+                    สร้างถิ่นฐาน บริหารวิกฤต พลิกฟื้นดาวอังคาร<br>
+                    คุณจะเข้าใจการคิดแบบ data-driven โดยไม่รู้ตัว<br>
+                    ไม่ต้องดูวิดีโอ • ไม่ต้องนั่งเรียน • เล่นจบได้จริง
+                </div>
+
+                <form class="signup-form" id="signupForm">
+                    <input type="email" id="emailInput" placeholder="อีเมลของคุณ" required aria-label="Email">
+                    <button type="submit">🚀 แจ้งเมื่อเปิดตัว</button>
+                </form>
+                
+                <div class="success-message" id="successMessage">
+                    🎉 ขอบคุณ! เราจะแจ้งเตือนคุณทันทีที่เปิดตัว
+                </div>
+                
+                <div class="signup-count">
+                    <span id="subscriberCount">0</span> คนรอเล่นแล้ว 🔥
+                </div>
+
+                <div class="pixel-city">
+                    <div class="building building-1">
+                        <div class="window"></div><div class="window"></div><div class="window"></div>
+                        <div class="window"></div><div class="window"></div><div class="window"></div>
+                    </div>
+                    <div class="building building-2">
+                        <div class="window"></div><div class="window"></div><div class="window"></div><div class="window"></div>
+                        <div class="window"></div><div class="window"></div><div class="window"></div><div class="window"></div>
+                    </div>
+                    <div class="building building-3">
+                        <div class="window"></div><div class="window"></div><div class="window"></div><div class="window"></div>
+                    </div>
+                    <div class="building building-4">
+                        <div class="window"></div><div class="window"></div><div class="window"></div>
+                        <div class="window"></div><div class="window"></div><div class="window"></div>
+                    </div>
+                    <div class="building building-5">
+                        <div class="window"></div><div class="window"></div><div class="window"></div><div class="window"></div>
+                    </div>
+                    <div class="building building-6">
+                        <div class="window"></div><div class="window"></div><div class="window"></div>
+                        <div class="window"></div><div class="window"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="problem">
+            <div class="container">
+                <div class="problem-content">
+                    <h2 class="section-title">😩 ทำไมการเรียนรู้แบบเดิมถึงไม่เวิร์ค?</h2>
+                    <div class="problem-item">
+                        <strong>นั่งฟัง แต่ไม่ได้ใช้จริง</strong>
+                        เข้าใจตอนดู แต่พอเจอสถานการณ์จริงกลับไม่รู้จะเริ่มยังไง
+                    </div>
+                    <div class="problem-item">
+                        <strong>เริ่มได้ แต่ไม่เคยจบ</strong>
+                        หลายคนตั้งใจเรียนรู้สิ่งใหม่ แต่สุดท้ายก็ทิ้งไว้กลางทาง
+                    </div>
+                    <div class="problem-item">
+                        <strong>เนื้อหาดูไกลตัว</strong>
+                        ตัวอย่างไม่เชื่อมกับชีวิตจริง ทำให้ไม่เห็นภาพการใช้งาน
+                    </div>
+                    <div class="problem-item">
+                        <strong>ไม่มีเรื่องเล่า</strong>
+                        พอถูกถามว่าเคยใช้ข้อมูลแก้ปัญหาอะไร กลับตอบไม่ได้
+                    </div>
+                    <div class="solution-box">
+                        <h3>✨ Life on Mars คือการเรียนรู้ที่คุณ "เล่นจบได้จริง"</h3>
+                        <p>เล่นเป็นเกม • ตัดสินใจจากข้อมูล • เห็นผลลัพธ์ทันที • มีประสบการณ์ที่เล่าได้</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">🌱 สิ่งที่คุณจะได้จาก Life on Mars</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎮</div>
+                        <h3 class="feature-title">Playable Learning Experience</h3>
+                        <p class="feature-desc">คุณไม่ได้มาเรียนบทเรียน แต่ใช้ข้อมูลเพื่อแก้ปัญหาในโลกจำลอง</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><span class="th-flag">TH</span></div>
+                        <h3 class="feature-title">ภาษาไทย เข้าใจง่าย</h3>
+                        <p class="feature-desc">อธิบายด้วยภาษาที่เป็นมนุษย์ ไม่ต้องมีพื้นฐานมาก่อน</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📖</div>
+                        <h3 class="feature-title">มีผลงานจากเรื่องราวที่คุณเล่น</h3>
+                        <p class="feature-desc">ทุกการตัดสินใจกลายเป็นกรณีศึกษาที่คุณอธิบายได้</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⏸️</div>
+                        <h3 class="feature-title">เล่นเมื่อพร้อม</h3>
+                        <p class="feature-desc">ไม่มีรายเดือน ไม่มีแรงกดดัน กลับมาเล่นเมื่อไรก็ได้</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">ออกแบบให้คุณเล่นจบ</h3>
+                        <p class="feature-desc">เล่นจบแล้วรู้สึกว่าคุณผ่านอะไรบางอย่างมาจริง ๆ</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3 class="feature-title">จ่ายครั้งเดียว</h3>
+                        <p class="feature-desc">ซื้อประสบการณ์การเรียนรู้ ไม่ใช่คอร์สที่ซื้อแล้วรู้สึกผิด</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">🚀 เล่นยังไง?</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <strong>รับ Quest</strong><br>
+                        <span>เมืองมีปัญหา และคุณต้องหาทางแก้</span>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <strong>ดูข้อมูล</strong><br>
+                        <span>ข้อมูลช่วยให้เห็นสิ่งที่ตาเปล่ามองไม่เห็น</span>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <strong>ตัดสินใจ</strong><br>
+                        <span>เลือกวิธีแก้ และเห็นผลลัพธ์จากการตัดสินใจของคุณ</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq">
+            <div class="container">
+                <h2 class="section-title">❓ คำถามที่พบบ่อย</h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <strong>ไม่เคยเขียนโค้ดมาก่อน เล่นได้ไหม?</strong>
+                        ได้แน่นอน Life on Mars ออกแบบให้เข้าใจแนวคิดก่อน เลือกลงลึกแค่ไหนก็ได้
+                    </div>
+                    <div class="faq-item">
+                        <strong>ต่างจากคอร์สยังไง?</strong>
+                        Life on Mars ไม่ได้ออกแบบให้คุณเรียน แต่ให้คุณใช้ข้อมูลเพื่อเอาชีวิตรอดในสถานการณ์จำลอง
+                    </div>
+                    <div class="faq-item">
+                        <strong>ราคาเท่าไหร่?</strong>
+                        ฿299 จ่ายครั้งเดียว เล่นจบเป็นเรื่องเป็นราว ไม่มี subscription
+                    </div>
+                    <div class="faq-item">
+                        <strong>เปิดตัวเมื่อไหร่?</strong>
+                        เป้าหมาย Q2 2026 (เมษายน-มิถุนายน)<br>ใส่อีเมลด้านบนเพื่อรับแจ้งเตือนเมื่อเปิดตัว!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+                    © 2025 Questademy • Made with ❤️ in Thailand 🇹🇭<br>
+                    สร้างโดยคนที่เชื่อว่าการเรียนรู้ไม่จำเป็นต้องน่าเบื่อ
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const starCount = 150;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                starfield.appendChild(star);
+            }
+        }
+
+        let subscriberCount = parseInt(localStorage.getItem('subscriberCount') || '0');
+        document.getElementById('subscriberCount').textContent = subscriberCount;
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            if (!email || !email.includes('@')) {
+                alert('กรุณาใส่อีเมลที่ถูกต้อง');
+                return;
+            }
+            console.log('New signup:', email);
+            subscriberCount++;
+            localStorage.setItem('subscriberCount', subscriberCount);
+            document.getElementById('subscriberCount').textContent = subscriberCount;
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            setTimeout(() => successMsg.classList.remove('show'), 5000);
+            document.getElementById('signupForm').reset();
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', handleSignup);
+        document.addEventListener('DOMContentLoaded', () => { createStarfield(); });
+        console.log('🪐 Life on Mars Landing Page loaded!');
+    </script>
+</body>
+</html>
