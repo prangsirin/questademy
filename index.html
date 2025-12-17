@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Home by Questademy – Cozy Simulation บนดาวอังคาร</title>
+    <meta name="description" content="Red Home - เกมจำลองการใช้ชีวิตบนดาวอังคารแบบ cozy simulation ที่ให้คุณสร้างถิ่นฐาน ใช้ชีวิต และตัดสินใจตามจังหวะของคุณเอง">
+
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ================================
+           GLOBAL VARIABLES & RESET
+           ================================ */
+        :root {
+            --font-pixel: 'Pixelify Sans', monospace;
+            --font-body: 'Sarabun', system-ui, sans-serif;
+            --color-bg: #0f0f1e;
+            --color-mars: #FF6B35;
+            --color-mars-dark: #b33e14;
+            --color-gold: #FFD700;
+            --color-ui-bg: #2a2a3e;
+            --color-ui-border: #4a4a6a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            line-height: 1.8;
+            overflow-x: hidden;
+            background: var(--color-bg);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .pixel-font { 
+            font-family: var(--font-pixel); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+        }
+        
+        .page-wrapper { 
+            width: 100%; 
+            min-height: 100%; 
+            position: relative; 
+            z-index: 1; 
+        }
+        
+        /* ================================
+           SPACE EFFECTS
+           ================================ */
+        .starfield { 
+            position: fixed; 
+            inset: 0; 
+            z-index: -1; 
+            pointer-events: none; 
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        .pixel-mars {
+            position: fixed;
+            width: 8px; 
+            height: 8px;
+            top: 15%; 
+            right: 10%;
+            z-index: 0;
+            transform: scale(4);
+            will-change: transform;
+            box-shadow:
+                0px 0px 0 4px #8B4513, 8px 0px 0 4px #8B4513, 16px 0px 0 4px #8B4513, 24px 0px 0 4px #8B4513, 32px 0px 0 4px #8B4513, 40px 0px 0 4px #8B4513,
+                -8px 8px 0 4px #8B4513, 0px 8px 0 4px #A0522D, 8px 8px 0 4px #CD5C5C, 16px 8px 0 4px #E17055, 24px 8px 0 4px #CD5C5C, 32px 8px 0 4px #A0522D, 40px 8px 0 4px #8B4513, 48px 8px 0 4px #8B4513,
+                -16px 16px 0 4px #8B4513, -8px 16px 0 4px #CD5C5C, 0px 16px 0 4px #E17055, 8px 16px 0 4px #FF6B35, 16px 16px 0 4px #E17055, 24px 16px 0 4px #E17055, 32px 16px 0 4px #CD5C5C, 40px 16px 0 4px #A0522D, 48px 16px 0 4px #8B4513,
+                -16px 24px 0 4px #8B4513, -8px 24px 0 4px #E17055, 0px 24px 0 4px #FF6B35, 8px 24px 0 4px #C1440E, 16px 24px 0 4px #8B4513, 24px 24px 0 4px #FF6B35, 32px 24px 0 4px #E17055, 40px 24px 0 4px #CD5C5C, 48px 24px 0 4px #8B4513,
+                -16px 32px 0 4px #8B4513, -8px 32px 0 4px #CD5C5C, 0px 32px 0 4px #E17055, 8px 32px 0 4px #A0522D, 16px 32px 0 4px #8B4513, 24px 32px 0 4px #CD5C5C, 32px 32px 0 4px #E17055, 40px 32px 0 4px #A0522D, 48px 32px 0 4px #8B4513,
+                -8px 40px 0 4px #8B4513, 0px 40px 0 4px #A0522D, 8px 40px 0 4px #CD5C5C, 16px 40px 0 4px #E17055, 24px 40px 0 4px #CD5C5C, 32px 40px 0 4px #A0522D, 40px 40px 0 4px #8B4513, 48px 40px 0 4px #8B4513,
+                0px 48px 0 4px #8B4513, 8px 48px 0 4px #8B4513, 16px 48px 0 4px #8B4513, 24px 48px 0 4px #8B4513, 32px 48px 0 4px #8B4513, 40px 48px 0 4px #8B4513;
+            animation: rotateMars 30s linear infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 107, 53, 0.6));
+        }
+
+        @keyframes rotateMars {
+            from { transform: scale(4) rotate(0deg); }
+            to { transform: scale(4) rotate(360deg); }
+        }
+
+        .pixel-spaceship {
+            position: fixed;
+            width: 8px; 
+            height: 8px;
+            top: 25%; 
+            left: 10%;
+            z-index: 0;
+            transform: scale(3);
+            will-change: transform;
+            box-shadow:
+                16px 0px 0 4px #64b5f6,
+                8px 8px 0 4px #64b5f6, 16px 8px 0 4px #ffffff, 24px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #2196f3, 8px 16px 0 4px #64b5f6, 16px 16px 0 4px #ffffff, 24px 16px 0 4px #64b5f6, 32px 16px 0 4px #2196f3,
+                0px 24px 0 4px #1976d2, 8px 24px 0 4px #2196f3, 16px 24px 0 4px #64b5f6, 24px 24px 0 4px #2196f3, 32px 24px 0 4px #1976d2,
+                -8px 32px 0 4px #ff6b35, 0px 32px 0 4px #1976d2, 8px 32px 0 4px #2196f3, 16px 32px 0 4px #1976d2, 24px 32px 0 4px #2196f3, 32px 32px 0 4px #1976d2, 40px 32px 0 4px #ff6b35;
+            animation: floatShip 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.8));
+        }
+
+        @keyframes floatShip {
+            0%, 100% { transform: scale(3) translateY(0); }
+            50% { transform: scale(3) translateY(-20px); }
+        }
+
+        .pixel-astronaut {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 40%;
+            right: 20%;
+            z-index: 0;
+            transform: scale(2.5);
+            will-change: transform;
+            box-shadow:
+                8px 0px 0 4px #64b5f6, 16px 0px 0 4px #64b5f6,
+                0px 8px 0 4px #64b5f6, 8px 8px 0 4px #ffffff, 16px 8px 0 4px #ffffff, 24px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #64b5f6, 8px 16px 0 4px #ffd700, 16px 16px 0 4px #ffd700, 24px 16px 0 4px #64b5f6,
+                8px 24px 0 4px #ffffff, 16px 24px 0 4px #ffffff,
+                0px 32px 0 4px #ffffff, 8px 32px 0 4px #2196f3, 16px 32px 0 4px #2196f3, 24px 32px 0 4px #ffffff,
+                8px 40px 0 4px #ffffff, 16px 40px 0 4px #ffffff,
+                8px 48px 0 4px #64b5f6, 16px 48px 0 4px #64b5f6;
+            animation: floatAstronaut 8s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(100, 181, 246, 0.6));
+        }
+
+        @keyframes floatAstronaut {
+            0%, 100% { transform: scale(2.5) translateY(0px) rotate(-5deg); }
+            50% { transform: scale(2.5) translateY(-30px) rotate(5deg); }
+        }
+
+        .pixel-satellite {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: 50%;
+            left: 25%;
+            z-index: 0;
+            transform: scale(2);
+            will-change: transform;
+            box-shadow:
+                -16px 8px 0 4px #1976d2, -16px 16px 0 4px #1976d2, -16px 24px 0 4px #1976d2,
+                -8px 8px 0 4px #2196f3, -8px 16px 0 4px #2196f3, -8px 24px 0 4px #2196f3,
+                0px 8px 0 4px #ffffff, 8px 8px 0 4px #64b5f6,
+                0px 16px 0 4px #64b5f6, 8px 16px 0 4px #ffffff,
+                0px 24px 0 4px #ffffff, 8px 24px 0 4px #64b5f6,
+                16px 8px 0 4px #2196f3, 24px 8px 0 4px #1976d2,
+                16px 16px 0 4px #2196f3, 24px 16px 0 4px #1976d2,
+                16px 24px 0 4px #2196f3, 24px 24px 0 4px #1976d2;
+            animation: rotateSatellite 15s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(33, 150, 243, 0.5));
+        }
+
+        @keyframes rotateSatellite {
+            0% { transform: scale(2) rotate(0deg); }
+            100% { transform: scale(2) rotate(360deg); }
+        }
+
+        /* ================================
+           HERO SECTION
+           ================================ */
+        .hero { 
+            min-height: 90vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 20px;
+            position: relative;
+        }
+
+        .company-logo {
+            font-family: var(--font-pixel);
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #E17055 0%, #FF6B35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            opacity: 0.9;
+        }
+
+        .game-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: var(--color-mars);
+            text-shadow: 
+                4px 4px 0 #000,
+                0 0 20px rgba(255, 107, 53, 0.6);
+            margin-bottom: 20px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .tagline {
+            font-family: var(--font-pixel);
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #ccc;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        /* ================================
+           SECTIONS
+           ================================ */
+        .section-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        .section-title {
+            font-family: var(--font-pixel);
+            text-align: center;
+            color: var(--color-gold);
+            margin-bottom: 50px;
+            font-size: 2rem;
+            letter-spacing: 3px;
+        }
+
+        /* ================================
+           FEATURES GRID
+           ================================ */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(42, 42, 62, 0.6);
+            border: 2px solid var(--color-ui-border);
+            padding: 30px;
+            border-radius: 12px;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-mars);
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.2);
+        }
+
+        .feature-icon { 
+            font-size: 3rem; 
+            margin-bottom: 15px; 
+            display: block; 
+        }
+        
+        .feature-title { 
+            font-family: var(--font-pixel); 
+            color: var(--color-gold); 
+            font-size: 1.4rem; 
+            margin-bottom: 10px; 
+        }
+
+        .feature-desc {
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
+        }
+
+        /* ================================
+           AUDIENCE SECTION
+           ================================ */
+        .audience-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .audience-item {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-mars);
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .audience-item:hover {
+            background: rgba(255, 107, 53, 0.15);
+            transform: translateX(8px);
+        }
+
+        .audience-item::before {
+            content: '✓';
+            font-size: 24px;
+            color: var(--color-gold);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        /* ================================
+           CTA SECTION
+           ================================ */
+        .cta-section { 
+            text-align: center; 
+            padding-bottom: 100px; 
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(42,42,62,0.8));
+            border: 4px solid var(--color-mars);
+            padding: 50px 30px;
+            max-width: 700px;
+            margin: 0 auto;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.15);
+        }
+
+        .cta-subtitle {
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-wrapper {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pixel-input {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            padding: 15px 20px;
+            background: #1a1a2e;
+            border: 3px solid var(--color-ui-border);
+            color: white;
+            min-width: 280px;
+            flex: 1;
+            outline: none;
+            transition: border-color 0.2s;
+            border-radius: 4px;
+        }
+        
+        .pixel-input:focus { 
+            border-color: var(--color-mars); 
+        }
+        
+        .pixel-input.error { 
+            border-color: #ff4757; 
+        }
+
+        .pixel-btn {
+            font-family: var(--font-pixel);
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            background: var(--color-mars);
+            color: white;
+            border: none;
+            border-bottom: 6px solid var(--color-mars-dark);
+            cursor: pointer;
+            transition: all 0.1s;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+
+        .pixel-btn:hover { 
+            filter: brightness(1.1); 
+        }
+        
+        .pixel-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+        
+        .pixel-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .success-msg {
+            display: none;
+            color: #4cd137;
+            font-family: var(--font-pixel);
+            font-size: 1.5rem;
+            margin-top: 20px;
+            animation: popIn 0.3s ease-out;
+        }
+        
+        .error-msg {
+            display: none;
+            color: #ff4757;
+            font-family: var(--font-pixel);
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+        
+        @keyframes popIn { 
+            0% { transform: scale(0.8); opacity: 0; } 
+            100% { transform: scale(1); opacity: 1; } 
+        }
+
+        /* ================================
+           FOOTER
+           ================================ */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-logo {
+            font-family: var(--font-pixel);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        /* ================================
+           RESPONSIVE
+           ================================ */
+        @media (max-width: 768px) {
+            .pixel-mars { 
+                transform: scale(2); 
+                right: 5%; 
+                top: 10%;
+            }
+            
+            .pixel-spaceship { 
+                transform: scale(2); 
+                left: 5%; 
+                top: 20%;
+            }
+            
+            .pixel-astronaut {
+                transform: scale(1.8);
+                right: 8%;
+                top: 45%;
+            }
+            
+            .pixel-satellite {
+                transform: scale(1.5);
+                left: 15%;
+                top: 55%;
+            }
+            
+            .form-wrapper { 
+                flex-direction: column; 
+            }
+            
+            .pixel-input { 
+                min-width: 100%; 
+            }
+            
+            .section-container {
+                padding: 60px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title { 
+                font-size: 2.5rem; 
+            }
+            
+            .tagline { 
+                font-size: 1.2rem; 
+            }
+            
+            .pixel-spaceship, 
+            .pixel-satellite { 
+                display: none; 
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Space Effects -->
+    <div class="starfield" id="starfield"></div>
+    <div class="pixel-mars"></div>
+    <div class="pixel-spaceship"></div>
+    <div class="pixel-astronaut"></div>
+    <div class="pixel-satellite"></div>
+
+    <div class="page-wrapper">
+        
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="company-logo">BY QUESTADEMY</div>
+            <h1 class="game-title">🏠 RED HOME</h1>
+            <div class="tagline">"เปลี่ยนดาวแดง ให้เป็นบ้าน"</div>
+            <p class="subtitle">
+                เกมแนว Cozy Simulation บนดาวอังคาร ที่ให้คุณสร้างถิ่นฐาน ปลูกผัก 
+                จัดการพลังงานและค้นหาความหมายของการเริ่มต้นใหม่<br>
+            </p>
+            <button class="pixel-btn" onclick="document.getElementById('waitlist').scrollIntoView()">
+                สำรวจโปรเจกต์ 🚀
+            </button>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section-container">
+            <h2 class="section-title">✨ ชีวิตประจำวันบนดาวอังคาร</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🌱</span>
+                    <h3 class="feature-title">ปลูกพืชในโดม</h3>
+                    <p class="feature-desc">
+                        ดูแลต้นไม้ จัดการน้ำและแสง สร้างระบบนิเวศเล็ก ๆ 
+                        ที่ช่วยให้คุณมีชีวิตรอด อาศัยทั้งเทคโนโลยีและความใส่ใจ
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3 class="feature-title">จัดการพลังงาน</h3>
+                    <p class="feature-desc">
+                        โซลาร์เซลล์ แบตเตอรี่ และการใช้พลังงานอย่างชาญฉลาดคือหัวใจของการอยู่รอด
+                        เพื่อให้เมืองรอดในคืนที่หนาวเหน็บ
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">👥</span>
+                    <h3 class="feature-title">ดูแลผู้คนในชุมชน</h3>
+                    <p class="feature-desc">
+                        ทุกคนมีเรื่องราว ความต้องการและบทบาท 
+                        คุณจะจัดการความสัมพันธ์และสร้างชุมชนที่อบอุ่นอย่างไร?
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🤖</span>
+                    <h3 class="feature-title">สร้างระบบอัตโนมัติ</h3>
+                    <p class="feature-desc">
+                        ออกแบบบอทช่วยงาน สร้างระบบขนส่งและทำให้ชีวิตบนดาวอังคารง่ายขึ้น
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🎲</span>
+                    <h3 class="feature-title">รับมือเหตุการณ์ไม่คาดคิด</h3>
+                    <p class="feature-desc">
+                        พายุทราย เครื่องเสีย คนป่วย ทุกอย่างเกิดขึ้นได้ 
+                        และคุณต้องตัดสินใจด้วยข้อมูลที่มี
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⏰</span>
+                    <h3 class="feature-title">เล่นตามจังหวะของตัวเอง</h3>
+                    <p class="feature-desc">
+                        จะเดินเล่นทั้งวันก็ได้ จะทำเควสก็ได้ 
+                        ไม่บังคับให้เล่นให้จบ ไม่เร่งให้เก่งขึ้น
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Target Audience -->
+        <section class="section-container" style="background: rgba(26, 26, 46, 0.3);">
+            <h2 class="section-title">🎯 เหมาะกับใคร</h2>
+            <div class="audience-grid">
+                <div class="audience-item">
+                    คนที่ชอบเกมแนว cozy / simulation
+                </div>
+                <div class="audience-item">
+                    คนที่ต้องการฝึกทักษะ Data + AI Automation
+                </div>
+                <div class="audience-item">
+                    คนที่ไม่ชอบการเรียนแบบ Video-Based
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="waitlist" class="section-container cta-section">
+            <div class="cta-box">
+                <h2 class="pixel-font" style="font-size:2rem; margin-bottom:10px;">
+                    🚀 JOIN OUR MISSION
+                </h2>
+                <p class="cta-subtitle">
+                    ลงชื่อเพื่อรับตั๋วเดินทางกลุ่มแรก (Early Access)<br>
+                    เปิดตัวครั้งแรก Q3 2026
+                </p>
+                
+                <form id="signupForm" class="form-wrapper">
+                    <input 
+                        type="email" 
+                        id="emailInput"
+                        class="pixel-input" 
+                        placeholder="อีเมลของคุณ..." 
+                        required
+                    >
+                    <button type="submit" class="pixel-btn" id="submitBtn">
+                        จองที่นั่ง 🚀
+                    </button>
+                </form>
+
+                <div id="successMsg" class="success-msg">
+                    ✨ ยืนยันตั๋วเดินทางเรียบร้อย! ✨
+                </div>
+                
+                <div id="errorMsg" class="error-msg">
+                    ⚠️ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-logo">QUESTADEMY STUDIO</div>
+            <p>© 2025 Red Home Project • All rights reserved</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                สร้างโดยคนที่เชื่อว่าการเรียนรู้ไม่จำเป็นต้องน่าเบื่อ
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        // ================================
+        // CONFIGURATION
+        // ================================
+        const CONFIG = {
+            GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwEbyYflqGQIT-8rXGqUdRg5lRHTGYbYvVE2mEmcwF_5rSngvr6g4ms9lG5IQWxXl0v/exec',
+            STAR_COUNT: 200
+        };
+
+        // ================================
+        // STARFIELD GENERATOR
+        // ================================
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            
+            for (let i = 0; i < CONFIG.STAR_COUNT; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random properties
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 2 + 1;
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 5;
+
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDuration = `${duration}s`;
+                star.style.animationDelay = `${delay}s`;
+
+                starfield.appendChild(star);
+            }
+            
+            console.log('✨ Starfield created with', CONFIG.STAR_COUNT, 'stars');
+        }
+
+        // ================================
+        // EMAIL VALIDATION
+        // ================================
+        function isValidEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        // ================================
+        // FORM SUBMISSION HANDLER
+        // ================================
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const form = document.getElementById('signupForm');
+            const emailInput = document.getElementById('emailInput');
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            const email = emailInput.value.trim();
+            
+            // Hide previous messages
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            emailInput.classList.remove('error');
+            
+            // Validate email
+            if (!isValidEmail(email)) {
+                emailInput.classList.add('error');
+                errorMsg.textContent = '⚠️ กรุณาใส่อีเมลที่ถูกต้อง';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ กำลังส่ง...';
+            
+            try {
+                // Send to Google Sheets
+                const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        timestamp: new Date().toISOString(),
+                        source: 'Red Home Landing Page',
+                        page: window.location.href
+                    })
+                });
+                
+                // Since mode is 'no-cors', we assume success if no error thrown
+                console.log('✅ Email sent successfully:', email);
+                
+                // Show success message
+                form.style.display = 'none';
+                successMsg.style.display = 'block';
+                
+                // Track in analytics (if available)
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'signup', {
+                        'event_category': 'engagement',
+                        'event_label': 'waitlist'
+                    });
+                }
+                
+            } catch (error) {
+                console.error('❌ Signup error:', error);
+                
+                // Show error message
+                errorMsg.textContent = '⚠️ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+                errorMsg.style.display = 'block';
+                
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'จองที่นั่ง 🚀';
+            }
+        }
+
+        // ================================
+        // INITIALIZATION
+        // ================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create starfield
+            createStarfield();
+            
+            // Attach form handler
+            const form = document.getElementById('signupForm');
+            form.addEventListener('submit', handleSignup);
+            
+            console.log('🏠 Red Home Landing Page loaded!');
+            console.log('✨ Space effects active!');
+            console.log('📧 Email backend connected to Google Sheets');
+        });
+    </script>
+</body>
+</html>
